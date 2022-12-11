@@ -426,11 +426,7 @@ function mineForward()
         turtle.digDown()
     end
     
-    local blockDetected, blockInfo = turtle.inspect()
-    if blockDetected then
-        turtle.dig()
-    end
-    assert(forward())
+    digMoveForward()
     
 end
 
