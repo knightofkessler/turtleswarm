@@ -1,15 +1,53 @@
 numSlots = 16
-startingY = 64
-x = 0
-y = startingY
-z = 0
-direction = 0 -- 0 is north, 1 is east, etc.
+defaultX = 0
+defaultY = 64
+defaultZ = 0
+defaultDirection = 0
+x = defaultX
+y = defaultY
+z = defaultZ
+direction = defaultDirection -- 0 is north, 1 is east, etc.
 
 -- The ores this machine will collect if it sees them while mining
 oresWanted = {["minecraft:iron_ore"]=true, ["minecraft:diamond_ore"]=true,
-              ["minecraft:coal_ore"]=true, ["minecraft:redstone_ore"]=true}
+              ["minecraft:coal_ore"]=true, ["minecraft:redstone_ore"]=true,
+              ["minecraft:gold_ore"]=true, ["mekanism:osmium_ore"]=true,
+              ["mekanism:tin_ore"]=true, ["mekanism:fluorite_ore"]=true,
+              ["mekanism:uranium_ore"]=true}
+
+-- The items this machine will throw out when mining
+itemsToTrash = {["minecraft:cobblestone"]=true, ["minecraft:diorite"]=true,
+                 ["minecraft:granite"]=true, ["minecraft:andesite"]=true,
+                 ["minecraft:dirt"]=true, ["minecraft:gravel"]=true,
+                 ["minecraft:flint"]=true, ["minecraft:sand"]=true,
+                 ["byg:rocky_stone"]=true, ["byg:soapstone"]=true,
+                 ["byg:scoria_cobblestone"]=true}
+
+-- File handle for writing to the log
+logfilename = "log.txt"
+log = fs.open(logfilename, "a")
+
+-- State file used for persistence across program executions
+statefilename = "state.txt"
+oldstatefilename = "state_old.txt"
+
+-- If this file doesn't exist, the turtle waits for user input before running
+runningfilename = "running.txt"
 
 function main()
+    
+    -- Waits for player input if this turtle wasn't already running
+    if not fs.exists(runningfilename) then
+        write("Press enter to begin mining.")
+        read()
+    end
+    local running = fs.open(runningfilename, "w")
+    running.close()
+    
+    printlog("Begin program execution")
+    loadState()
+    
+    trashItems(itemsToTrash)
     
     while true do
         
@@ -19,7 +57,7 @@ function main()
         
         -- Controlls the mining behavior
         miningDirection = true
-        while true do
+        for j = 1, 10, 1 do
             
             local squareRadius = 30
             for i = 1, 30, 1 do
@@ -49,51 +87,27 @@ function main()
         
     end
     
-    -- Unused code from early test
-    while true do
-        
-        for i = 0, 19, 1
-        do
-            
-            -- Moves over terrain
-            local temp, block = turtle.inspect()
-            while block["name"] == "minecraft:grass_block" or block["name"] == "minecraft:dirt"
-            do
-                assert(up())
-                temp, block = turtle.inspect()
-            end
-            
-            -- Digs out other blocks in front
-            if turtle.detect()
-            then
-                turtle.dig("right")
-            end
-            
-            -- Moves forward
-            assert(forward())
-            
-            -- Falls down
-            while not turtle.detectDown()
-            do
-                assert(down())
-            end
-            
-        end
-        
-        -- Turns around
-        turnRight()
-        turnRight()
-        
-    end
-    
 end
 
--- Moves the turtle forward
+-- Prints the given message to the log file
+function printlog(message)
+    log.write(message)
+    log.write("\n")
+    log.flush()
+end
+
+-- Moves the turtle forward, refueling it if necessary
+-- Return: Whether the turtle moved successfully
 function forward()
     
-    moved = turtle.forward()
+    if turtle.getFuelLevel() <= 0 then
+        refuel()
+    end
+    
+    moved, reason = turtle.forward()
     
     if moved then
+        
         if direction == 0
         then
             z = z - 1
@@ -110,18 +124,31 @@ function forward()
         then
             x = x - 1
         end
+        
+        saveState()
+        
+        printlog("Moved forward to (" .. x .. ", " .. y .. ", " .. z .. ")")
+        
+    else
+        printlog("Failed to move forward, reason: " .. reason)
     end
     
     return moved
     
 end
 
--- Moves the turtle backward
+-- Moves the turtle backward, refueling it if necessary
+-- Return: Whether the turtle moved successfully
 function back()
+    
+    if turtle.getFuelLevel() <= 0 then
+        refuel()
+    end
 
-    moved = turtle.back()
+    moved, reason = turtle.back()
     
     if moved then
+        
         if direction == 0
         then
             z = z + 1
@@ -138,45 +165,89 @@ function back()
         then
             x = x + 1
         end
+        
+        saveState()
+        
+        printlog("Moved back to (" .. x .. ", " .. y .. ", " .. z .. ")")
+        
+    else
+        printlog("Failed to move back, reason: " .. reason)
     end
     
     return moved
     
 end
 
--- Moves the turtle up
+-- Moves the turtle up, refueling it if necessary
+-- Return: Whether the turtle moved successfully
 function up()
     
-    moved = turtle.up()
-    if moved then
-        y = y + 1
+    if turtle.getFuelLevel() <= 0 then
+        refuel()
     end
+    
+    moved, reason = turtle.up()
+    if moved then
+        
+        y = y + 1
+        
+        saveState()
+        
+        printlog("Moved up to (" .. x .. ", " .. y .. ", " .. z .. ")")
+        
+    else
+        printlog("Failed to move up, reason: " .. reason)
+    end
+    
     return moved
     
 end
 
--- Moves the turtle down
+-- Moves the turtle down, refueling it if necessary
+-- Return: Whether the turtle moved successfully
 function down()
     
-    moved = turtle.down()
-    if moved then
-        y = y - 1
+    if turtle.getFuelLevel() <= 0 then
+        refuel()
     end
+    
+    moved, reason = turtle.down()
+    if moved then
+        
+        y = y - 1
+        
+        saveState()
+        
+        printlog("Moved down to (" .. x .. ", " .. y .. ", " .. z .. ")")
+        
+    else
+        printlog("Failed to move down, reason: " .. reason)
+    end
+    
     return moved
     
 end
 
 -- Turns a turtle left
+-- Return: Whether the turtle turned successfully
 function turnLeft()
     
-    turned = turtle.turnLeft()
+    turned, reason = turtle.turnLeft()
     
     if turned then
+        
         direction = direction - 1
         if direction < 0 then
             direction = direction + 4
             assert(direction == 3)
         end
+        
+        saveState()
+        
+        printlog("Turned left to face " .. direction)
+        
+    else
+        printlog("Failed to turn left, reason: ", reason)
     end
     
     return turned
@@ -184,16 +255,25 @@ function turnLeft()
 end
 
 -- Turns a turtle right
+-- Return: Whether the turtle turned successfully
 function turnRight()
     
-    turned = turtle.turnRight()
+    turned, reason = turtle.turnRight()
     
     if turned then
+        
         direction = direction + 1
         if direction > 3 then
             direction = direction - 4
             assert(direction == 0)
         end
+        
+        saveState()
+        
+        printlog("Turned right to face " .. direction)
+        
+    else
+        printlog("Failed to turn right, reason: ", reason)
     end
     
     return turned
@@ -201,54 +281,89 @@ function turnRight()
 end
 
 -- Faces a turtle north
+-- Return: Whether the turtle faced north successfully
 function faceNorth()
+    printlog("Turning to face North")
     if direction == 3 then
-        turnRight()
+        if not turnRight() then
+            return false
+        end
     end
-    while direction < 0 do
-        turnLeft()
+    while direction > 0 do
+        if not turnLeft() then
+            return false
+        end
     end
+    return true
 end
 
 -- Faces a turtle east
+-- Return: Whether the turtle faced east successfully
 function faceEast()
+    printlog("Turning to face East")
     while direction < 1 do
-        turnRight()
+        if not turnRight() then
+            return false
+        end
     end
     while direction > 1 do
-        turnLeft()
+        if not turnLeft() then
+            return false
+        end
     end
+    return true
 end
 
 -- Faces a turtle south
+-- Return: Whether the turtle faced south successfully
 function faceSouth()
+    printlog("Turning to face South")
     while direction < 2 do
-        turnRight()
+        if not turnRight() then
+            return false
+        end
     end
     while direction > 2 do
-        turnLeft()
+        if not turnLeft() then
+            return false
+        end
     end
+    return true
 end
 
 -- Faces a turtle west
+-- Return: Whether the turtle faced west successfully
 function faceWest()
+    printlog("Turning to face West")
     if direction == 0 then
-        turnLeft()
+        if not turnLeft() then
+            return false
+        end
     end
     while direction < 3 do
-        turnRight()
+        if not turnRight() then
+            return false
+        end
     end
+    return true
 end
 
 -- Goes to the given coordinates and direction, breaking blocks to get there
+-- destinationX: The x-coordinate of the location to go to
+-- destinationY: The y-coordinate of the location to go to
+-- destinationZ: The z-coordinate of the location to go to
+-- destinationDirection: The direction to face when it gets to its location
 -- checkLowFuel: true if the turtle should check for low fuel after each movement then react accordingly
-function goTo(returnX, returnY, returnZ, returnDirection, checkLowFuel)
+function goTo(destinationX, destinationY, destinationZ, destinationDirection, checkLowFuel)
+    
+    printlog("Going to coordinates (" .. destinationX .. ", " .. destinationY .. ", " ..
+             destinationZ .. "), direction=" .. destinationDirection)
     
     -- Moves north as needed
-    if returnZ < z then
+    if destinationZ < z then
         faceNorth()
     end
-    while returnZ < z do
+    while destinationZ < z do
         assert(digMoveForward())
         if checkLowFuel then
             refuelOrHome()
@@ -256,10 +371,10 @@ function goTo(returnX, returnY, returnZ, returnDirection, checkLowFuel)
     end
     
     -- Moves east as needed
-    if returnX > x then
+    if destinationX > x then
         faceEast()
     end
-    while returnX > x do
+    while destinationX > x do
         assert(digMoveForward())
         if checkLowFuel then
             refuelOrHome()
@@ -267,10 +382,10 @@ function goTo(returnX, returnY, returnZ, returnDirection, checkLowFuel)
     end
     
     -- Moves south as needed
-    if returnZ > z then
+    if destinationZ > z then
         faceSouth()
     end
-    while returnZ > z do
+    while destinationZ > z do
         assert(digMoveForward())
         if checkLowFuel then
             refuelOrHome()
@@ -278,10 +393,10 @@ function goTo(returnX, returnY, returnZ, returnDirection, checkLowFuel)
     end
     
     -- Moves west as needed
-    if returnX < x then
+    if destinationX < x then
         faceWest()
     end
-    while returnX < x do
+    while destinationX < x do
         assert(digMoveForward())
         if checkLowFuel then
             refuelOrHome()
@@ -289,7 +404,7 @@ function goTo(returnX, returnY, returnZ, returnDirection, checkLowFuel)
     end
     
     -- Moves up as needed
-    while returnY > y do
+    while destinationY > y do
         assert(digMoveUp())
         if checkLowFuel then
             refuelOrHome()
@@ -297,7 +412,7 @@ function goTo(returnX, returnY, returnZ, returnDirection, checkLowFuel)
     end
     
     -- Moves down as needed
-    while returnY < y do
+    while destinationY < y do
         assert(digMoveDown())
         if checkLowFuel then
             refuelOrHome()
@@ -305,18 +420,27 @@ function goTo(returnX, returnY, returnZ, returnDirection, checkLowFuel)
     end
     
     -- Faces the direction needed
-    if returnDirection == 0 then
-        faceNorth()
+    if destinationDirection == 0 then
+        assert(faceNorth())
     end
-    if returnDirection == 1 then
-        faceEast()
+    if destinationDirection == 1 then
+        assert(faceEast())
     end
-    if returnDirection == 2 then
-        faceSouth()
+    if destinationDirection == 2 then
+        assert(faceSouth())
     end
-    if returnDirection == 3 then
-        faceWest()
+    if destinationDirection == 3 then
+        assert(faceWest())
     end
+    
+    printlog("Reached target coordinates (" .. destinationX .. ", " .. destinationY .. ", " ..
+             destinationZ .. "), direction=" .. destinationDirection)
+    printlog("Current coordinates (" .. x .. ", " .. y .. ", " .. z .. "), direction=" .. direction)
+    
+    assert(x == destinationX)
+    assert(y == destinationY)
+    assert(z == destinationZ)
+    assert(direction == destinationDirection)
     
 end
 
@@ -373,10 +497,10 @@ function mineOre()
     end
     
     -- Remembers where to return to when done mining
-    returnX = x
-    returnY = y
-    returnZ = z
-    returnDirection = direction
+    local returnX = x
+    local returnY = y
+    local returnZ = z
+    local returnDirection = direction
     
     while oresWanted[blockInfo["name"]] do
     
@@ -436,41 +560,224 @@ function refuelOrHome()
     -- Extra fuel to have when getting home; must be at least 1
     safetyBuffer = 50
     
-    distanceFromHome = math.abs(x) + math.abs(y - startingY) + math.abs(z)
+    distanceFromHome = math.abs(x) + math.abs(y - defaultY) + math.abs(z)
     -- If the turtle needs more fuel
     if distanceFromHome + safetyBuffer > turtle.getFuelLevel() then
         
         -- Attempts to refuel the turtle
-        for i = 1, numSlots, 1 do
-            turtle.select(i)
-            turtle.refuel()
-        end
+        refuel()
         
         -- If the turtle could not refuel itself enough, it returns home
         if distanceFromHome + safetyBuffer > turtle.getFuelLevel() then
-            goTo(0, startingY, 0, 0, false)
-            os.shutdown()
+            printlog("Fuel low, returning home")
+            goTo(defaultX, defaultY, defaultZ, defaultDirection, false)
+            shutdown()
         end
         
     end
     
 end
 
--- If the turtle's inventory is full, then it returns home to 0, 64, 0 then stops program execution
-function checkInventoryFull()
-    
-    numNonEmptySlots = 0
+-- Refuels the turtle using all combustible items in its inventory
+function refuel()
+    printlog("Refueling")
     for i = 1, numSlots, 1 do
-        if turtle.getItemCount(i) > 0 then
-            numNonEmptySlots = numNonEmptySlots + 1
+        turtle.select(i)
+        turtle.refuel()
+    end
+end
+
+-- Returns whether the machine's inventory is full
+function isInventoryFull()
+    
+    for i = 1, numSlots, 1 do
+        if turtle.getItemCount(i) == 0 then
+            return false
         end
     end
     
-    if numNonEmptySlots == numSlots then
-        goTo(0, startingY, 0, 0, false)
-        os.shutdown()
+    return true
+    
+end
+
+-- Throws out items on the given list
+-- trashList: The table of item types to throw out; each entry should be formatted as ["namespace:item"]=true
+function trashItems(trashList)
+    
+    printlog("Trashing items")
+    
+    for i = 1, numSlots, 1 do
+        
+        local itemInfo = turtle.getItemDetail(i)
+        
+        if not (itemInfo == nil) then
+            if trashList[itemInfo["name"]] then
+                turtle.select(i)
+                assert(turtle.drop())
+            end
+        end
+        
     end
     
+end
+
+-- If the turtle's inventory is full, then it empties its inventory. If it can't empty any items,
+-- it returns home to 0, 64, 0 then stops program execution
+function checkInventoryFull()
+    
+    if isInventoryFull() then
+        trashItems(itemsToTrash)
+    end
+    
+    if isInventoryFull() then
+        printlog("Inventory full, returning home")
+            goTo(defaultX, defaultY, defaultZ, defaultDirection, false)
+        shutdown()
+    end
+    
+end
+
+-- Loads the state file
+-- Return: Whether the file or backup file was successfully loaded
+function loadState()
+    
+    -- Load state file
+    printlog("Reading main state file")
+    local state = fs.open(statefilename, "r")
+    local successfullyLoadedFile = false
+    if state then
+        successfullyLoadedFile = parseStateFile(state)
+    end
+    
+    -- If failed, load old state file
+    if not successfullyLoadedFile then
+        printlog("Main state file read failed\nReading backup state file")
+        state = fs.open(oldstatefilename, "r")
+        if state then
+            successfullyLoadedFile = parseStateFile(state)
+        end
+        
+        -- Main state file is corrupted, but backup is fine
+        if successfullyLoadedFile then
+            -- Replace main state file with backup file
+            if fs.exists(oldstatefilename) then
+                fs.delete(statefilename)
+                fs.copy(oldstatefilename, statefilename)
+            end
+        end
+    end
+    
+    -- If failed, assume default state
+    if not successfullyLoadedFile then
+        
+        x = defaultX
+        y = defaultY
+        z = defaultZ
+        direction = defaultDirection
+        printlog("Statefile read failed, assuming defaults: (" .. x .. ", " .. y .. ", " .. z .. ") direction=" .. direction)
+        
+        -- Deletes corrupted state files if they exist
+        if fs.exists(statefilename) then
+            fs.delete(statefilename)
+        end
+        if fs.exists(oldstatefilename) then
+            fs.delete(oldstatefilename)
+        end
+        
+        if state then
+            state.close()
+        end
+        return false
+    end
+    
+    printlog("Statefile read success: (" .. x .. ", " .. y .. ", " .. z .. ") direction=" .. direction)
+    state.close()
+    return true
+    
+end
+
+-- Helper function, parses data from state files into program variables
+-- file: file handle for the state file to read from
+-- Return: whether data was read to the program successfully
+function parseStateFile(file)
+    
+    local readX = tonumber(nextToken(file))
+    local readY = tonumber(nextToken(file))
+    local readZ = tonumber(nextToken(file))
+    local readDirection = tonumber(nextToken(file))
+    
+    if readX and readY and readZ and readDirection then
+        x = readX
+        y = readY
+        z = readZ
+        direction = readDirection
+        return true
+    end
+    
+    return false
+    
+end
+
+-- Helper function for reading files; returns the next token, deliminated by " " or "\n"
+-- file: the file handle to read from
+-- Return: the token, or nil if a token could not be read
+function nextToken(file)
+    
+    local token = ""
+    
+    -- Skips whitespace at the beginning
+    local character = file.read()
+    while character == " " or character == "\n" do
+        character = file.read()
+    end
+    
+    -- Reads the token
+    while not (character == " " or character == "\n") and character do
+        token = token .. character
+        character = file.read()
+    end
+    
+    if token == "" then
+        return nil
+    else
+        return token
+    end
+    
+end
+
+-- Saves the state to a file
+-- Returns: whether the state was saved successfully
+function saveState()
+    
+    printlog("Saving state")
+    
+    -- Copies to a backup file in case saving is interrupted
+    if fs.exists(statefilename) then
+        fs.delete(oldstatefilename)
+        fs.copy(statefilename, oldstatefilename)
+    end
+    
+    -- Saves the state
+    local state = fs.open(statefilename, "w")
+    if state then
+        state.write(x .. "\n" .. y .. "\n" .. z .. "\n" .. direction)
+        state.close()
+        printlog("State saved")
+        return true
+    
+    else
+        printlog("Could not write to state file\nState saving failed")
+        return false
+    end
+    
+end
+
+-- Ends program execution, closing open file handles
+function shutdown()
+    printlog("End program execution")
+    log.close()
+    fs.delete(runningfilename)
+    os.shutdown()
 end
 
 main()
