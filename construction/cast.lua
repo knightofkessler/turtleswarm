@@ -1,3 +1,5 @@
+require('mine')
+
 function cast(segmentLen,yOffset,iterations)
 --Creates a lava cast by moving up yOffset blocks, placing a wall of lava
 --segmentLen blocks long, covering it in water, and then repeating this process
@@ -13,14 +15,14 @@ for i = 1,iterations,1 do
     
     --We get into position
     for j = 1, yOffset, 1 do
-        turtle.up()
+        digMoveUp()
     end
 
     --We prime the wall
     turtle.place()
     os.sleep(7)
     turtle.place()
-    turtle.forward()
+    digMoveForward()
     
     --The rest of the wall can be built more quickly
     for j = 2, segmentLen, 1 do
@@ -29,22 +31,22 @@ for i = 1,iterations,1 do
         os.sleep(2)
         turtle.place()
     
-        turtle.forward()
+        digMoveForward()
     end    
     
     --We pour water all over the most recent segment
-    turtle.up()
-    turtle.up()
+    digMoveUp()
+    digMoveUp()
     turtle.select(1)
     turtle.place()
     os.sleep(2)
     turtle.place()
-    turtle.down()
-    turtle.down()
+    digMoveDown()
+    digMoveDown()
     
     --We turn around and prepare to make the next segment
-    turtle.turnLeft()
-    turtle.turnLeft()
+    turnLeft()
+    turnLeft()
     
 end
 
