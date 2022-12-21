@@ -1,0 +1,564 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>move</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>move</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>move</code></h1>
+<p>Library of various movement functions.</p>
+<p>
+
+ This library keeps track of the turtle's current position and maintains persistence
+ of this position tracking across program runs. If using this library, move the turtle only
+ with the functions provided in here, otherwise the position tracking will break.
+<p> The position is saved to a file positions.txt. Each entry contains information in the
+ order: x y z direction. The optional fifth line includes information about the turtle's next
+ intended move, used for avoiding race conditions between saving position to a file and random
+ program execution cutoff.
+ </p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Author</strong>: Brenden Lech</li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#initialize">initialize ()</a></td>
+	<td class="summary">Initializes the position tracking, loading informaton from file as needed.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getX">getX ()</a></td>
+	<td class="summary">Returns the x position of the turtle in the turtle's local coordinate system.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getY">getY ()</a></td>
+	<td class="summary">Returns the y position of the turtle in the turtle's local coordinate system.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getZ">getZ ()</a></td>
+	<td class="summary">Returns the z position of the turtle in the turtle's local coordinate system.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getDirection">getDirection ()</a></td>
+	<td class="summary">Returns the cardinal direction the turtle is facing in the turtle's local coordinate system.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#forward">forward ()</a></td>
+	<td class="summary">Moves the turtle forward, refueling it if necessary.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#back">back ()</a></td>
+	<td class="summary">Moves the turtle backward, refueling it if necessary.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#up">up ()</a></td>
+	<td class="summary">Moves the turtle up, refueling it if necessary.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#down">down ()</a></td>
+	<td class="summary">Moves the turtle down, refueling it if necessary.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#turnLeft">turnLeft ()</a></td>
+	<td class="summary">Turns the turtle left.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#turnRight">turnRight ()</a></td>
+	<td class="summary">Turns the turtle right.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#faceNorth">faceNorth ()</a></td>
+	<td class="summary">Faces the turtle north.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#faceEast">faceEast ()</a></td>
+	<td class="summary">Faces the turtle east.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#faceSouth">faceSouth ()</a></td>
+	<td class="summary">Faces the turtle south.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#faceWest">faceWest ()</a></td>
+	<td class="summary">Faces the turtle west.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#goTo">goTo (destX, destY, destZ, destDirection[, fuelSafetyBuffer=0])</a></td>
+	<td class="summary">Goes to the given position and direction, breaking blocks to get there.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#digMoveForward">digMoveForward ()</a></td>
+	<td class="summary">Digs one block forward, repeatedly breaking the block until it can do so unless it cannot
+ break the block.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#digMoveDown">digMoveDown ()</a></td>
+	<td class="summary">Digs one block down, repeatedly breaking the block until it can do so unless it cannot
+ break the block.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#digMoveUp">digMoveUp ()</a></td>
+	<td class="summary">Digs one block up, repeatedly breaking the block until it can do so unless it cannot
+ break the block.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "initialize"></a>
+    <strong>initialize ()</strong>
+    </dt>
+    <dd>
+    Initializes the position tracking, loading informaton from file as needed.  This function is
+ called automatically upon module load. Calling this function manually will only reinitialize
+ the turtle's position tracking from its file.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getX"></a>
+    <strong>getX ()</strong>
+    </dt>
+    <dd>
+    Returns the x position of the turtle in the turtle's local coordinate system.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">int</span></span>
+        the x position of the turtle in the turtle's local coordinate system
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getY"></a>
+    <strong>getY ()</strong>
+    </dt>
+    <dd>
+    Returns the y position of the turtle in the turtle's local coordinate system.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">int</span></span>
+        the y position of the turtle in the turtle's local coordinate system
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getZ"></a>
+    <strong>getZ ()</strong>
+    </dt>
+    <dd>
+    Returns the z position of the turtle in the turtle's local coordinate system.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">int</span></span>
+        the z position of the turtle in the turtle's local coordinate system
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getDirection"></a>
+    <strong>getDirection ()</strong>
+    </dt>
+    <dd>
+    Returns the cardinal direction the turtle is facing in the turtle's local coordinate system.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">int</span></span>
+        the cardinal direction the turtle is facing in the turtle's local coordinate
+ system (0=north, 1=east, 2=south, and 3=west)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "forward"></a>
+    <strong>forward ()</strong>
+    </dt>
+    <dd>
+    Moves the turtle forward, refueling it if necessary.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the turtle moved successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "back"></a>
+    <strong>back ()</strong>
+    </dt>
+    <dd>
+    Moves the turtle backward, refueling it if necessary.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the turtle moved successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "up"></a>
+    <strong>up ()</strong>
+    </dt>
+    <dd>
+    Moves the turtle up, refueling it if necessary.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the turtle moved successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "down"></a>
+    <strong>down ()</strong>
+    </dt>
+    <dd>
+    Moves the turtle down, refueling it if necessary.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the turtle moved successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "turnLeft"></a>
+    <strong>turnLeft ()</strong>
+    </dt>
+    <dd>
+    Turns the turtle left.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the turtle turned successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "turnRight"></a>
+    <strong>turnRight ()</strong>
+    </dt>
+    <dd>
+    Turns the turtle right.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the turtle turned successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "faceNorth"></a>
+    <strong>faceNorth ()</strong>
+    </dt>
+    <dd>
+    Faces the turtle north.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the turtle faced north successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "faceEast"></a>
+    <strong>faceEast ()</strong>
+    </dt>
+    <dd>
+    Faces the turtle east.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the turtle faced east successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "faceSouth"></a>
+    <strong>faceSouth ()</strong>
+    </dt>
+    <dd>
+    Faces the turtle south.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the turtle faced south successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "faceWest"></a>
+    <strong>faceWest ()</strong>
+    </dt>
+    <dd>
+    Faces the turtle west.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the turtle faced west successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "goTo"></a>
+    <strong>goTo (destX, destY, destZ, destDirection[, fuelSafetyBuffer=0])</strong>
+    </dt>
+    <dd>
+    Goes to the given position and direction, breaking blocks to get there.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">destX</span>
+            <span class="types"><span class="type">int</span></span>
+         the x-coordinate of the location to go to
+        </li>
+        <li><span class="parameter">destY</span>
+            <span class="types"><span class="type">int</span></span>
+         the y-coordinate of the location to go to
+        </li>
+        <li><span class="parameter">destZ</span>
+            <span class="types"><span class="type">int</span></span>
+         the z-coordinate of the location to go to
+        </li>
+        <li><span class="parameter">destDirection</span>
+            <span class="types"><span class="type">int</span></span>
+         the direction to face when it gets to its location
+        </li>
+        <li><span class="parameter">fuelSafetyBuffer</span>
+            <span class="types"><span class="type">int</span></span>
+         optional safety buffer for determining whether there is
+ enough fuel to reach the destination
+         (<em>default</em> 0)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "digMoveForward"></a>
+    <strong>digMoveForward ()</strong>
+    </dt>
+    <dd>
+    Digs one block forward, repeatedly breaking the block until it can do so unless it cannot
+ break the block.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether it could break the block and move forward
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "digMoveDown"></a>
+    <strong>digMoveDown ()</strong>
+    </dt>
+    <dd>
+    Digs one block down, repeatedly breaking the block until it can do so unless it cannot
+ break the block.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether it could break the block and move down
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "digMoveUp"></a>
+    <strong>digMoveUp ()</strong>
+    </dt>
+    <dd>
+    Digs one block up, repeatedly breaking the block until it can do so unless it cannot
+ break the block.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether it could break the block and move up
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-12-21 16:46:20 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>utils</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>utils</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>utils</code></h1>
+<p>Library of utilities to do with logging, state saving, and program shutdown.</p>
+<p>
+<p> Programs should call utils.initialize() on startup and utils.shutdown() to end
+ program execution.
+</p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Author</strong>: Brenden Lech</li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#printlog">printlog (message)</a></td>
+	<td class="summary">Prints the given message to the log file, followed by a new line</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#registerStateVariable">registerStateVariable (variable)</a></td>
+	<td class="summary">TODO
+ Adds a table to the list of state variables to save and load</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#loadState">loadState ()</a></td>
+	<td class="summary">TODO rewrite to use the new statefile architecture
+ Loads the state file</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nextToken">nextToken (file)</a></td>
+	<td class="summary">Returns the next token in a file, deliminated by " " and/or "\n"</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#saveState">saveState ()</a></td>
+	<td class="summary">TODO rewrite to use the new statefile architecture
+ Saves the state to a file</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#waitAtStartup">waitAtStartup (message)</a></td>
+	<td class="summary">Waits for user input before executing the program.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#initialize">initialize ()</a></td>
+	<td class="summary">All programs with persistence should call this on startup.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#shutdown">shutdown ()</a></td>
+	<td class="summary">Ends program execution, closing open file handles</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "printlog"></a>
+    <strong>printlog (message)</strong>
+    </dt>
+    <dd>
+    Prints the given message to the log file, followed by a new line
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">message</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         the message to print
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "registerStateVariable"></a>
+    <strong>registerStateVariable (variable)</strong>
+    </dt>
+    <dd>
+    TODO
+ Adds a table to the list of state variables to save and load
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">variable</span>
+            <span class="types"><span class="type">tab</span></span>
+         the state variable to register to be saved/loaded
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "loadState"></a>
+    <strong>loadState ()</strong>
+    </dt>
+    <dd>
+    TODO rewrite to use the new statefile architecture
+ Loads the state file
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the file or backup file was successfully loaded
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nextToken"></a>
+    <strong>nextToken (file)</strong>
+    </dt>
+    <dd>
+    Returns the next token in a file, deliminated by " " and/or "\n"
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">file</span>
+            <span class="types"><span class="type">tab</span></span>
+         the file handle to read from
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        the token, or nil if a token could not be read
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "saveState"></a>
+    <strong>saveState ()</strong>
+    </dt>
+    <dd>
+    TODO rewrite to use the new statefile architecture
+ Saves the state to a file
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the state was saved successfully
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "waitAtStartup"></a>
+    <strong>waitAtStartup (message)</strong>
+    </dt>
+    <dd>
+    Waits for user input before executing the program.  Useful for preventing the robot from
+ wandering off during initial setup. utils.initialize() should be called after this function.
+ If program execution last ended without calling utils.shutdown(), this function will do nothing.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">message</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         the message to print to prompt the user for input
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "initialize"></a>
+    <strong>initialize ()</strong>
+    </dt>
+    <dd>
+    All programs with persistence should call this on startup.  If using utils.waitAtStartup(), this
+ function should be called after it. Creates an file that is deleted when the program ends with
+ utils.shutdown(). Allows the program to detect whether it was ended properly last time or was
+ interrupted.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "shutdown"></a>
+    <strong>shutdown ()</strong>
+    </dt>
+    <dd>
+    Ends program execution, closing open file handles
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-12-21 16:46:32 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
