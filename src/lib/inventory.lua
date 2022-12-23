@@ -1,6 +1,7 @@
 -----
 -- Library of various inventory-related functions.
 -- @author Brenden Lech
+-- @author Joshua Fitzgerald
 
 package.path = "/lib/?.lua;" .. package.path
 require "utils"
@@ -34,6 +35,31 @@ function inventory.isInventoryFull()
     
     return true
     
+end
+
+-----
+-- Tries to select the specified item in the inventory, optionally attempting to select
+-- a slot that possesses at least a specified number of the item
+-- @tparam str identifier the namespaced identifier of the desired item
+-- @tparam int number (optional) the minimum number of items that the slot must contain
+-- Defaults to 1. 
+-- @treturn bool whether or not a slot with the desired item in the desired quantity exists
+function inventory.findItem(identifier,number)
+
+    number = number or 1
+
+    for i = 1, NUM_SLOTS, 1 do
+        turtle.select(i)
+
+        local info = turtle.getItemDetail()
+        if info then
+            if info.name == identifier and info.count >= number then
+                return true
+            end
+        end
+    end
+    
+    return false
 end
 
 -----
