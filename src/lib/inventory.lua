@@ -71,6 +71,32 @@ function inventory.findItem(identifier,number)
 end
 
 -----
+-- Attempts to select the largest stack of a specified resource
+-- @tparam str identifier the namespaced identifier of the desired item.
+-- @treturn int returns the size of the selected stack (which may be zero
+-- if the resource does not exit)
+function inventory.findLargestItemStack(identifier)
+    local largestSize = 0
+    local lastLargest = turtle.getSelectedSlot()
+
+    while true do
+      
+        --We try to find a larger stack than the one we have 
+        if inventory.findItem(identifier,largestSize+1) then
+            --We need to save the slot in case things go awry
+            largestSize = turtle.getItemDetail().count
+            lastLargest = turtle.getSelectedSlot()
+        else
+            turtle.select(lastLargest)
+            break
+        end
+    end
+
+    return selectedSize
+
+end
+
+-----
 -- Sorts the inventory, putting items of the same type in the same slots to save space
 function inventory.sortInventory()
     
@@ -115,7 +141,7 @@ end
 -----
 -- Returns the total number of slots in a turtle's inventory.
 -- @treturn int the total number of slots in a turtle's inventory
-function getNumSlots()
+function inventory.getNumSlots()
     return NUM_SLOTS
 end
 
