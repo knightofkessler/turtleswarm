@@ -38,10 +38,11 @@ function inventory.isInventoryFull()
 end
 
 -----
--- Tries to select the specified item in the inventory, optionally attempting to select
--- a slot that possesses at least a specified number of the item
--- @tparam str identifier the namespaced identifier of the desired item
--- @tparam int number (optional) the minimum number of items that the slot must contain
+-- Tries to select the specified item (or an empty slot) in the inventory, optionally attempting to select
+-- a slot that possesses at least a specified number of the item.
+-- @tparam str identifier the namespaced identifier of the desired item. If identifier is empty/nil,
+-- findItem will try to find an empty slot.
+-- @tparam int number (optional) the minimum number of items that the slot must contain.
 -- Defaults to 1. 
 -- @treturn bool whether or not a slot with the desired item in the desired quantity exists
 function inventory.findItem(identifier,number)
@@ -52,8 +53,15 @@ function inventory.findItem(identifier,number)
         turtle.select(i)
 
         local info = turtle.getItemDetail()
+
         if info then
+            --If we are looking for an item, then we do these tests
             if info.name == identifier and info.count >= number then
+                return true
+            end
+        else
+            --If we are not looking for an item, then great, we found an empty slot
+            if not identifier then
                 return true
             end
         end
