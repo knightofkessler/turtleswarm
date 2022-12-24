@@ -13,7 +13,6 @@
 -- @author Brenden Lech
 
 package.path = "/lib/?.lua;" .. package.path
-require "inventory"
 require "utils"
 
 -- The library table
@@ -374,13 +373,9 @@ function move.getDirection()
 end
 
 -----
--- Moves the turtle forward, refueling it if necessary.
+-- Attempts to move the turtle forward
 -- @treturn bool whether the turtle moved successfully
 function move.forward()
-    
-    if turtle.getFuelLevel() <= 0 then
-        inventory.refuel()
-    end
     
     local intent = setIntent(INTENT.FORWARD)
     local moved, reason = turtle.forward()
@@ -397,13 +392,9 @@ function move.forward()
 end
 
 -----
--- Moves the turtle backward, refueling it if necessary.
+-- Attempts to move the turtle backward
 -- @treturn bool whether the turtle moved successfully
 function move.back()
-    
-    if turtle.getFuelLevel() <= 0 then
-        inventory.refuel()
-    end
     
     local intent = setIntent(INTENT.BACK)
     local moved, reason = turtle.back()
@@ -420,13 +411,9 @@ function move.back()
 end
 
 -----
--- Moves the turtle up, refueling it if necessary.
+-- Attempts to move the turtle up
 -- @treturn bool whether the turtle moved successfully
 function move.up()
-    
-    if turtle.getFuelLevel() <= 0 then
-        inventory.refuel()
-    end
     
     local intent = setIntent(INTENT.UP)
     local moved, reason = turtle.up()
@@ -443,13 +430,9 @@ function move.up()
 end
 
 -----
--- Moves the turtle down, refueling it if necessary.
+-- Attempts to move the turtle down
 -- @treturn bool whether the turtle moved successfully
 function move.down()
-    
-    if turtle.getFuelLevel() <= 0 then
-        inventory.refuel()
-    end
     
     local intent = setIntent(INTENT.DOWN)
     local moved, reason = turtle.down()
