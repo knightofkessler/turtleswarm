@@ -1,10 +1,15 @@
 -----
 -- Library of crafting-related functions.
 --
--- Throughout this package, crafting recipes should be specified 
--- as a table whose (integer) indices correspond to turtle inventory slots (assume a 
--- 4x4 grid, but only the slots in ) and whose (string) entries correspond to item identifiers. Empty slots
--- should be left as nil (which means they don't have to be defined explicitly)
+-- Throughout this package, crafting recipes should be specified as a table whose (integer) indices 
+-- correspond to crafting table slots (in the way depicted below) whose (string) entries correspond 
+-- to item identifiers. Empty slots should be left as nil (which means they don't have to be defined explicitly)
+-- 
+-- Indices refer to the following slots:
+-- 1 2 3
+-- 4 5 6
+-- 7 8 9
+--
 -- @author Joshua Fitzgerald
 
 package.path = "/lib/?.lua;" .. package.path
@@ -14,30 +19,24 @@ require "inventory"
 -- The library table
 craft = {}
 
--- These are the slots which we are always going to use for crafting.
---Any recipes that contain slots not on this list will be rejected.
-local CRAFTING_SLOTS = {1,2,3,5,6,7,9,10,11}
-
 -----
--- Attempts to craft the recipe provided in the format above.
+-- Attempts to craft the recipe provided.
 -- DISCARDS SOME ITEMS NOT USED FOR CRAFTING THE RECIPE WITHOUT
 -- MAKING SURE THEY ARE SAFELY RETRIEVABLE!
--- @tparam table recipe The recipe to craft
+-- @tparam table recipe The recipe to craft, provided in crafting table notation
 -- @treturn bool Whether crafting succeeded
 -- @treturn string A failure reason explaining why crafting failed
 function craft.craftRecipe(recipe)
 
-    -- If the recipe contains an illegal crafting position, it will be thrown out.
+    -- For most of this function, we will use a version of the recipe that has been converted to
+    -- turtle inventory notation, which assumes a 4x4 grid instead of a 3x3 grid
+    local recipeTN = {}
     for position, item in pairs(recipe) do
-        local legal = false
-        for _, craftingSlot in pairs(CRAFTING_SLOTS) do
-            if position == craftingSlot then
-                legal = true
-                break
-            end
-        end
-        if not legal then
-            return false, "In crafting recipe, disallowed inventory slot number: " .. position
+        newposition = position + math.floor((position - 1) / 3)
+        if 1 <= newposition and newposition <= 16 then
+            recipeTN[newposition] = item
+        else
+            return false, "Disallowed index in crafting recipe: " .. position
         end
     end
     
@@ -48,7 +47,7 @@ function craft.craftRecipe(recipe)
     -- on hand to meet the crafting recipe's requirements.
     -- Note: this code will not work with strange crafting recipes where 
     -- the required number of an item to be used exceeds its max stack size
-    recipeRequirements = craft.computeRecipeRequirements(recipe)
+    recipeRequirements = craft.computeRecipeRequirements(recipeTN)
     for item, amount in pairs(recipeRequirements) do
         -- If we don't have a stack with enough of some resource, we don't try to craft
         -- the recipe
@@ -65,7 +64,7 @@ function craft.craftRecipe(recipe)
         local selectionInfo = turtle.getItemDetail() 
 
         local isUsed = false
-        for _, item in pairs(recipe) do
+        for _, item in pairs(recipeTN) do
             -- If we find that the item is in the recipe, then we need to keep looking
             if selectionInfo and selectionInfo.name == item then
                 isUsed = true
@@ -83,7 +82,7 @@ function craft.craftRecipe(recipe)
     
     -- Now that we have cleaned up the inventory, we can start making the recipe. 
     -- Before removing the extraneous items, we just put the items we need into position.
-    for position, item in pairs(recipe) do
+    for position, item in pairs(recipeTN) do
         turtle.select(position)
 
         --If the item is already in position, we don't need to do the ensuing code
@@ -118,7 +117,7 @@ function craft.craftRecipe(recipe)
 
         -- We get info about the current slot and see whether it should be empty. If so, we
         -- drop its contents.
-        if not recipe[i] then
+        if not recipeTN[i] then
             turtle.select(i)
             turtle.drop()
         end
@@ -131,7 +130,8 @@ end
 
 -----
 -- Computes the amounts of each resource required to craft the recipe provided.
--- @tparam table recipe The recipe whose requirements should be computed, provided in the format above
+-- @tparam table recipe The recipe whose requirements should be computed (both crafting table notation and
+-- turtle inventory notation are acceptable)
 -- @toutput table A table whose indices are item identifiers and whose entries are the required quantities
 function craft.computeRecipeRequirements(recipe)
     recipeRequirements = {}
@@ -143,12 +143,4 @@ function craft.computeRecipeRequirements(recipe)
         end
     end
     return recipeRequirements
-end
-
------
--- Returns a table containing the inventory slots that recipes are allowed to use. Any recipe that
--- tries to use slots not on this list will be rejected.
--- @treturn table The crafting slots available for recipes to use
-function craft.getCraftingSlots()
-     return CRAFTING_SLOTS
 end
