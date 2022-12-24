@@ -92,7 +92,7 @@ function inventory.findLargestItemStack(identifier)
         end
     end
 
-    return selectedSize
+    return largestSize
 
 end
 
