@@ -44,11 +44,11 @@
 <div id="content">
 
 <h1>Module <code>move</code></h1>
-<p>Library of various movement functions.</p>
+<p>Module of various movement functions.</p>
 <p>
 
- This library keeps track of the turtle's current position and maintains persistence
- of this position tracking across program runs. If using this library, move the turtle only
+ This module keeps track of the turtle's current position and maintains persistence
+ of this position tracking across program runs. If using this module, move the turtle only
  with the functions provided in here, otherwise the position tracking will break.
 <p> The position is saved to a file positions.txt. Each entry contains information in the
  order: x y z direction. The optional fifth line includes information about the turtle's next
@@ -85,19 +85,19 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#forward">forward ()</a></td>
-	<td class="summary">Moves the turtle forward, refueling it if necessary.</td>
+	<td class="summary">Attempts to move the turtle forward</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#back">back ()</a></td>
-	<td class="summary">Moves the turtle backward, refueling it if necessary.</td>
+	<td class="summary">Attempts to move the turtle backward</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#up">up ()</a></td>
-	<td class="summary">Moves the turtle up, refueling it if necessary.</td>
+	<td class="summary">Attempts to move the turtle up</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#down">down ()</a></td>
-	<td class="summary">Moves the turtle down, refueling it if necessary.</td>
+	<td class="summary">Attempts to move the turtle down</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#turnLeft">turnLeft ()</a></td>
@@ -253,14 +253,14 @@
     <strong>forward ()</strong>
     </dt>
     <dd>
-    Moves the turtle forward, refueling it if necessary.
+    Attempts to move the turtle forward
 
 
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether the turtle moved successfully
     </ol>
 
@@ -273,14 +273,14 @@
     <strong>back ()</strong>
     </dt>
     <dd>
-    Moves the turtle backward, refueling it if necessary.
+    Attempts to move the turtle backward
 
 
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether the turtle moved successfully
     </ol>
 
@@ -293,14 +293,14 @@
     <strong>up ()</strong>
     </dt>
     <dd>
-    Moves the turtle up, refueling it if necessary.
+    Attempts to move the turtle up
 
 
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether the turtle moved successfully
     </ol>
 
@@ -313,14 +313,14 @@
     <strong>down ()</strong>
     </dt>
     <dd>
-    Moves the turtle down, refueling it if necessary.
+    Attempts to move the turtle down
 
 
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether the turtle moved successfully
     </ol>
 
@@ -340,7 +340,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether the turtle turned successfully
     </ol>
 
@@ -360,7 +360,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether the turtle turned successfully
     </ol>
 
@@ -380,7 +380,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether the turtle faced north successfully
     </ol>
 
@@ -400,7 +400,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether the turtle faced east successfully
     </ol>
 
@@ -420,7 +420,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether the turtle faced south successfully
     </ol>
 
@@ -440,7 +440,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether the turtle faced west successfully
     </ol>
 
@@ -500,7 +500,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether it could break the block and move forward
     </ol>
 
@@ -521,7 +521,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether it could break the block and move down
     </ol>
 
@@ -542,7 +542,7 @@
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">bool</span></span>
+           <span class="types"><span class="type">boolean</span></span>
         whether it could break the block and move up
     </ol>
 
@@ -557,7 +557,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-12-21 16:46:20 </i>
+<i style="float:right;">Last updated 2022-12-25 22:24:03 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

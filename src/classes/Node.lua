@@ -19,7 +19,7 @@ Node.NODE_TYPE.NORMAL = "normal"
 Node.NODE_TYPE.CONDITIONAL = "conditional"
 
 -----
--- The function this node will run when visited. May be nil.
+-- The function this node will run when visited
 Node.task = nil
 
 -----

@@ -24,7 +24,7 @@ end
 
 -----
 -- Returns whether every slot in the inventory has an item in it
--- @treturn bool whether every slot in the inventory has an item in it
+-- @treturn boolean whether every slot in the inventory has an item in it
 function inventory.isInventoryFull()
     
     for i = 1, NUM_SLOTS, 1 do
@@ -40,11 +40,11 @@ end
 -----
 -- Tries to select the specified item (or an empty slot) in the inventory, optionally attempting to select
 -- a slot that possesses at least a specified number of the item.
--- @tparam str identifier the namespaced identifier of the desired item. If identifier is empty/nil,
+-- @tparam string identifier the namespaced identifier of the desired item. If identifier is empty/nil,
 -- findItem will try to find an empty slot.
 -- @tparam int number (optional) the minimum number of items that the slot must contain.
 -- Defaults to 1. 
--- @treturn bool whether or not a slot with the desired item in the desired quantity exists
+-- @treturn boolean whether or not a slot with the desired item in the desired quantity exists
 function inventory.findItem(identifier, number)
 
     number = number or 1
@@ -72,7 +72,7 @@ end
 
 -----
 -- Attempts to select the largest stack of a specified resource
--- @tparam str identifier the namespaced identifier of the desired item.
+-- @tparam string identifier the namespaced identifier of the desired item.
 -- @treturn int returns the size of the selected stack (which may be zero
 -- if the resource does not exit)
 function inventory.findLargestItemStack(identifier)
@@ -118,7 +118,7 @@ end
 
 -----
 -- Throws out items from the inventory that are on the given list onto the ground
--- @tparam tab trashList the table of item types to throw out, each entry formatted as ["namespace:item"]=true
+-- @tparam table trashList the table of item types to throw out, each entry formatted as ["namespace:item"]=true
 function inventory.trashItems(trashList)
     
     utils.printlog("Trashing items")

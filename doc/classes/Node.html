@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Node</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Tables">Tables</a></li>
+<li><a href="#Fields">Fields</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>node</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>node</code></h1>
+<p>Class for the behavior tree nodes.</p>
+<p> The task function passed into this node must take
+ a nil or a single table as its arguments and return boolean, otherwise behavior of this
+ class is undefined.
+</p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Author</strong>: Brenden Lech</li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Node:new">Node:new (task[, args=nil[, type=Node.NODE_TYPE.NORMAL]])</a></td>
+	<td class="summary">Creates a new Node object.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Node:addChild">Node:addChild (child)</a></td>
+	<td class="summary">Adds a child to this node.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Node:runTree">Node:runTree ()</a></td>
+	<td class="summary">Recursively traverses the tree depth-first, starting with this node as the root.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Node:visit">Node:visit ()</a></td>
+	<td class="summary">Executes this node's task function.</td>
+	</tr>
+</table>
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Node.children">Node.children</a></td>
+	<td class="summary">This node's child nodes, as an ordered list</td>
+	</tr>
+</table>
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Node.NODE_TYPE.NORMAL">Node.NODE_TYPE.NORMAL</a></td>
+	<td class="summary">The normal node type, which runs its function when visited</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Node.NODE_TYPE.CONDITIONAL">Node.NODE_TYPE.CONDITIONAL</a></td>
+	<td class="summary">The conditional node type, which runs its function when visited only if its previous sibling
+ node failed to complete its task</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Node.task">Node.task</a></td>
+	<td class="summary">The function this node will run when visited</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Node.args">Node.args</a></td>
+	<td class="summary">The arguments to this node's task function, a table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Node.type">Node.type</a></td>
+	<td class="summary">This node's type</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Node:new"></a>
+    <strong>Node:new (task[, args=nil[, type=Node.NODE_TYPE.NORMAL]])</strong>
+    </dt>
+    <dd>
+    Creates a new Node object.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">task</span>
+            <span class="types"><span class="type">function</span></span>
+         The function to run when this node is visited in the tree traversal.
+ This function must take a single table or nil as an argument, and it must return a
+ boolean value of whether it successfully completed its task.
+        </li>
+        <li><span class="parameter">args</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         The arguments for this node's task function
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">type</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The type of node this is. Can only be one of
+ the types stored in Node.NODE_TYPE. If it isn't, it reverts to the default type.
+         (<em>default</em> Node.NODE_TYPE.NORMAL)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">Node</span></span>
+        Returns the new node object or nil if illegal arguments were given
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Node:addChild"></a>
+    <strong>Node:addChild (child)</strong>
+    </dt>
+    <dd>
+    Adds a child to this node.  A node's children are ordered, and this adds it to the end of the
+ children list on the right.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">child</span>
+            <span class="types"><span class="type">Node</span></span>
+         The child node to add to this object. This function does nothing if
+ child is nil.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Node:runTree"></a>
+    <strong>Node:runTree ()</strong>
+    </dt>
+    <dd>
+    Recursively traverses the tree depth-first, starting with this node as the root.  Each node runs
+ its task when visited. Conditional nodes only run their task if their previous sibling node
+ failed to complete its task.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Node:visit"></a>
+    <strong>Node:visit ()</strong>
+    </dt>
+    <dd>
+    Executes this node's task function.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+        Returns whether the task function succeeded in completing its task
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Node.children"></a>
+    <strong>Node.children</strong>
+    </dt>
+    <dd>
+    This node's child nodes, as an ordered list
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Node.NODE_TYPE.NORMAL"></a>
+    <strong>Node.NODE_TYPE.NORMAL</strong>
+    </dt>
+    <dd>
+    The normal node type, which runs its function when visited
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Node.NODE_TYPE.CONDITIONAL"></a>
+    <strong>Node.NODE_TYPE.CONDITIONAL</strong>
+    </dt>
+    <dd>
+    The conditional node type, which runs its function when visited only if its previous sibling
+ node failed to complete its task
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Node.task"></a>
+    <strong>Node.task</strong>
+    </dt>
+    <dd>
+    The function this node will run when visited
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Node.args"></a>
+    <strong>Node.args</strong>
+    </dt>
+    <dd>
+    The arguments to this node's task function, a table.  May be nil.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Node.type"></a>
+    <strong>Node.type</strong>
+    </dt>
+    <dd>
+    This node's type
+
+
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-12-25 22:15:16 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

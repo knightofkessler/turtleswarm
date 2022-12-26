@@ -32,7 +32,7 @@ end
 -----
 --TODO
 -- Adds a table to the list of state variables to save and load
--- @tparam tab variable the state variable to register to be saved/loaded
+-- @tparam table variable the state variable to register to be saved/loaded
 function utils.registerStateVariable(variable)
     io.write("ERROR: Function not implemented.")
     assert(false)
@@ -41,7 +41,7 @@ end
 -----
 -- TODO rewrite to use the new statefile architecture
 -- Loads the state file
--- @treturn bool whether the file or backup file was successfully loaded
+-- @treturn boolean whether the file or backup file was successfully loaded
 function utils.loadState()
     io.write("ERROR: Function not implemented.")
     assert(false)
@@ -49,7 +49,7 @@ end
 
 -----
 -- Returns the next token in a file, deliminated by " " and/or "\n"
--- @tparam tab file the file handle to read from
+-- @tparam table file the file handle to read from
 -- @treturn string the token, or nil if a token could not be read
 function utils.nextToken(file)
     
@@ -78,7 +78,7 @@ end
 -----
 -- TODO rewrite to use the new statefile architecture
 -- Saves the state to a file
--- @treturn bool whether the state was saved successfully
+-- @treturn boolean whether the state was saved successfully
 function utils.saveState()
     io.write("ERROR: Function not implemented.")
     assert(false)

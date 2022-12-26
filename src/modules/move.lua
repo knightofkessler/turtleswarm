@@ -129,7 +129,7 @@ end
 
 -----
 -- Saves the turtle's position to a file.
--- @treturn bool whether the position file was successfully written to
+-- @treturn boolean whether the position file was successfully written to
 local function savePosition()
     
     -- Deletes and overwrites the position file on the next write if it is
@@ -293,7 +293,7 @@ end
 
 -----
 -- Loads the turtle's position from a file.
--- @treturn bool whether the position was successfully loaded from file
+-- @treturn boolean whether the position was successfully loaded from file
 local function loadPosition()
     
     -- Loads the position file
@@ -374,7 +374,7 @@ end
 
 -----
 -- Attempts to move the turtle forward
--- @treturn bool whether the turtle moved successfully
+-- @treturn boolean whether the turtle moved successfully
 function move.forward()
     
     local intent = setIntent(INTENT.FORWARD)
@@ -393,7 +393,7 @@ end
 
 -----
 -- Attempts to move the turtle backward
--- @treturn bool whether the turtle moved successfully
+-- @treturn boolean whether the turtle moved successfully
 function move.back()
     
     local intent = setIntent(INTENT.BACK)
@@ -412,7 +412,7 @@ end
 
 -----
 -- Attempts to move the turtle up
--- @treturn bool whether the turtle moved successfully
+-- @treturn boolean whether the turtle moved successfully
 function move.up()
     
     local intent = setIntent(INTENT.UP)
@@ -431,7 +431,7 @@ end
 
 -----
 -- Attempts to move the turtle down
--- @treturn bool whether the turtle moved successfully
+-- @treturn boolean whether the turtle moved successfully
 function move.down()
     
     local intent = setIntent(INTENT.DOWN)
@@ -450,7 +450,7 @@ end
 
 -----
 -- Turns the turtle left.
--- @treturn bool whether the turtle turned successfully
+-- @treturn boolean whether the turtle turned successfully
 function move.turnLeft()
     
     local intent = setIntent(INTENT.LEFT)
@@ -469,7 +469,7 @@ end
 
 -----
 -- Turns the turtle right.
--- @treturn bool whether the turtle turned successfully
+-- @treturn boolean whether the turtle turned successfully
 function move.turnRight()
     
     local intent = setIntent(INTENT.RIGHT)
@@ -488,7 +488,7 @@ end
 
 -----
 -- Faces the turtle north.
--- @treturn bool whether the turtle faced north successfully
+-- @treturn boolean whether the turtle faced north successfully
 function move.faceNorth()
     utils.printlog("Turning to face North")
     if direction == 3 then
@@ -506,7 +506,7 @@ end
 
 -----
 -- Faces the turtle east.
--- @treturn bool whether the turtle faced east successfully
+-- @treturn boolean whether the turtle faced east successfully
 function move.faceEast()
     utils.printlog("Turning to face East")
     while direction < 1 do
@@ -524,7 +524,7 @@ end
 
 -----
 -- Faces the turtle south.
--- @treturn bool whether the turtle faced south successfully
+-- @treturn boolean whether the turtle faced south successfully
 function move.faceSouth()
     utils.printlog("Turning to face South")
     while direction < 2 do
@@ -542,7 +542,7 @@ end
 
 -----
 -- Faces the turtle west.
--- @treturn bool whether the turtle faced west successfully
+-- @treturn boolean whether the turtle faced west successfully
 function move.faceWest()
     utils.printlog("Turning to face West")
     if direction == 0 then
@@ -651,7 +651,7 @@ end
 -----
 -- Digs one block forward, repeatedly breaking the block until it can do so unless it cannot
 -- break the block.
--- @treturn bool whether it could break the block and move forward
+-- @treturn boolean whether it could break the block and move forward
 function move.digMoveForward()
     
     while not move.forward() do
@@ -667,7 +667,7 @@ end
 -----
 -- Digs one block down, repeatedly breaking the block until it can do so unless it cannot
 -- break the block.
--- @treturn bool whether it could break the block and move down
+-- @treturn boolean whether it could break the block and move down
 function move.digMoveDown()
     
     while not move.down() do
@@ -683,7 +683,7 @@ end
 -----
 -- Digs one block up, repeatedly breaking the block until it can do so unless it cannot
 -- break the block.
--- @treturn bool whether it could break the block and move up
+-- @treturn boolean whether it could break the block and move up
 function move.digMoveUp()
     
     while not move.up() do

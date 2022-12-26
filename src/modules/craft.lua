@@ -24,7 +24,7 @@ craft = {}
 -- DISCARDS SOME ITEMS NOT USED FOR CRAFTING THE RECIPE WITHOUT
 -- MAKING SURE THEY ARE SAFELY RETRIEVABLE!
 -- @tparam table recipe The recipe to craft, provided in crafting table notation
--- @treturn bool Whether crafting succeeded
+-- @treturn boolean Whether crafting succeeded
 -- @treturn string A failure reason explaining why crafting failed
 function craft.craftRecipe(recipe)
 
@@ -132,7 +132,7 @@ end
 -- Computes the amounts of each resource required to craft the recipe provided.
 -- @tparam table recipe The recipe whose requirements should be computed (both crafting table notation and
 -- turtle inventory notation are acceptable)
--- @toutput table A table whose indices are item identifiers and whose entries are the required quantities
+-- @treturn table A table whose indices are item identifiers and whose entries are the required quantities
 function craft.computeRecipeRequirements(recipe)
     recipeRequirements = {}
     for _, item in pairs(recipe) do
