@@ -1,8 +1,8 @@
 -----
--- Library of various movement functions.
+-- Module of various movement functions.
 -- 
--- This library keeps track of the turtle's current position and maintains persistence
--- of this position tracking across program runs. If using this library, move the turtle only
+-- This module keeps track of the turtle's current position and maintains persistence
+-- of this position tracking across program runs. If using this module, move the turtle only
 -- with the functions provided in here, otherwise the position tracking will break. 
 --
 -- The position is saved to a file positions.txt. Each entry contains information in the
@@ -12,10 +12,10 @@
 -- 
 -- @author Brenden Lech
 
-package.path = "/lib/?.lua;" .. package.path
+package.path = "/modules/?.lua;" .. package.path
 require "utils"
 
--- The library table
+-- The module table
 move = {}
 
 local DEFAULT_X = 0

@@ -1,8 +1,8 @@
 -----
--- Tests the move library's functions. When the test is run, there should be no blocks within 10
+-- Tests the move modules's functions. When the test is run, there should be no blocks within 10
 -- blocks of the turtle, except for one block behind the turtle.
 
-package.path = "/lib/?.lua;" .. package.path
+package.path = "/modules/?.lua;" .. package.path
 require "move"
 
 local function assertEquals(x, y)

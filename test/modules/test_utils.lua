@@ -1,7 +1,7 @@
 -----
--- Tests the utils library's functions. The computer will shut down if all tests pass.
+-- Tests the utils modules's functions. The computer will shut down if all tests pass.
 
-package.path = "/lib/?.lua;" .. package.path
+package.path = "/modules/?.lua;" .. package.path
 require "utils"
 
 -----

@@ -1,5 +1,5 @@
 -----
--- Library of crafting-related functions.
+-- Module of crafting-related functions.
 --
 -- Throughout this package, crafting recipes should be specified as a table whose (integer) indices 
 -- correspond to crafting table slots (in the way depicted below) whose (string) entries correspond 
@@ -12,11 +12,11 @@
 --
 -- @author Joshua Fitzgerald
 
-package.path = "/lib/?.lua;" .. package.path
+package.path = "/modules/?.lua;" .. package.path
 require "utils"
 require "inventory"
 
--- The library table
+-- The module table
 craft = {}
 
 -----

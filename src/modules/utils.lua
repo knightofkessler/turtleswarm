@@ -1,12 +1,12 @@
 -----
--- Library of utilities to do with logging, state saving, and program shutdown.
+-- Module of utilities to do with logging, state saving, and program shutdown.
 --
 -- Programs should call utils.initialize() on startup and utils.shutdown() to end
 -- program execution.
 --
 -- @author Brenden Lech
 
--- The library table
+-- The module table
 utils = {}
 
 -- File handle for writing to the log

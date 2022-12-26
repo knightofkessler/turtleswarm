@@ -1,9 +1,9 @@
 -----
--- Library of various inventory-related functions.
+-- Module of various inventory-related functions.
 -- @author Brenden Lech
 -- @author Joshua Fitzgerald
 
-package.path = "/lib/?.lua;" .. package.path
+package.path = "/modules/?.lua;" .. package.path
 require "utils"
 
 -- The library table
@@ -45,7 +45,7 @@ end
 -- @tparam int number (optional) the minimum number of items that the slot must contain.
 -- Defaults to 1. 
 -- @treturn bool whether or not a slot with the desired item in the desired quantity exists
-function inventory.findItem(identifier,number)
+function inventory.findItem(identifier, number)
 
     number = number or 1
 
