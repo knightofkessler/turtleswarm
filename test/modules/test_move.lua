@@ -1,10 +1,16 @@
 -----
 -- Tests the move modules's functions. When the test is run, there should be no blocks within 10
 -- blocks of the turtle, except for one block behind the turtle.
+--
+-- @author Brenden Lech
 
 package.path = "/modules/?.lua;" .. package.path
 require "move"
 
+-----
+-- Asserts that x equals y, and prints an error message to the console if false
+-- @param x the first value to compare
+-- @param y the second value to compare
 local function assertEquals(x, y)
     if not (x == y) then
         io.write("Assertion failed: " .. x .. " == " .. y .. "\n")

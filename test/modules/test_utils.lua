@@ -1,5 +1,7 @@
 -----
 -- Tests the utils modules's functions. The computer will shut down if all tests pass.
+--
+-- @author Brenden Lech
 
 package.path = "/modules/?.lua;" .. package.path
 require "utils"

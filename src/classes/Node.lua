@@ -40,10 +40,10 @@ Node.children = {}
 -- This function must take a single table or nil as an argument, and it must return a
 -- boolean value of whether it successfully completed its task.
 -- @tparam[opt=nil] table args The arguments for this node's task function
--- @tparam[opt=Node.NODE_TYPE.NORMAL] string type The type of node this is. Can only be one of
+-- @tparam[opt=Node.NODE_TYPE.NORMAL] string nodeType The type of node this is. Can only be one of
 -- the types stored in Node.NODE_TYPE. If it isn't, it reverts to the default type.
 -- @treturn Node Returns the new node object or nil if illegal arguments were given
-function Node:new(task, args, type)
+function Node:new(task, args, nodeType)
 
     if not task then
         return nil
@@ -57,13 +57,13 @@ function Node:new(task, args, type)
     o.task = task
     o.args = args
 
-    o.type = type
+    o.type = nodeType
     -- Ensures a valid node type was passed in
     if o.type then
 
         local invalidType = true
-        for i = 0, #Node.NODE_TYPE, 1 do
-            if (o.type == Node.NODE_TYPE[i]) then
+        for k, v in pairs(Node.NODE_TYPE) do
+            if (o.type == v) then
                 invalidType = false
             end
         end
@@ -88,11 +88,14 @@ end
 -- children list on the right.
 -- @tparam Node child The child node to add to this object. This function does nothing if
 -- child is nil.
+-- @treturn Node the node added as a child
 function Node:addChild(child)
     
     if child then
         self.children[#self.children + 1] = child
     end
+
+    return child
 
 end
 
@@ -100,12 +103,13 @@ end
 -- Recursively traverses the tree depth-first, starting with this node as the root. Each node runs
 -- its task when visited. Conditional nodes only run their task if their previous sibling node
 -- failed to complete its task.
+-- @treturn boolean whether the tree traversal succeeded and the root node's task was completed
 function Node:runTree()
 
     local previousTaskSucceeded = true
 
     -- Recursively visits all children in this subtree
-    for i = 0, #self.children, 1 do
+    for i = 1, #self.children, 1 do
 
         local visitChild = false
 
@@ -121,7 +125,7 @@ function Node:runTree()
 
         if visitChild then
             -- Traverses the child node's tree
-            previousTaskSucceeded = self.children[i].runTree()
+            previousTaskSucceeded = self.children[i]:runTree()
         end
 
     end
@@ -134,7 +138,7 @@ function Node:runTree()
     end
 
     -- Visits this node, running its task function
-    return self.visit()
+    return self:visit()
 
 end
 
