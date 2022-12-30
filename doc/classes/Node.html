@@ -47,10 +47,7 @@
 
 <h1>Module <code>node</code></h1>
 <p>Class for the behavior tree nodes.</p>
-<p> The task function passed into this node must take
- a nil or a single table as its arguments and return boolean, otherwise behavior of this
- class is undefined.
-</p>
+<p></p>
     <h3>Info:</h3>
     <ul>
         <li><strong>Author</strong>: Brenden Lech</li>
@@ -68,11 +65,11 @@
 	<td class="summary">Adds a child to this node.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Node:runTree">Node:runTree ()</a></td>
+	<td class="name" nowrap><a href="#Node:runTree">Node:runTree (siblingErrorTable)</a></td>
 	<td class="summary">Recursively traverses the tree depth-first, starting with this node as the root.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Node:visit">Node:visit ()</a></td>
+	<td class="name" nowrap><a href="#Node:visit">Node:visit (errorTable)</a></td>
 	<td class="summary">Executes this node's task function.</td>
 	</tr>
 </table>
@@ -96,7 +93,7 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Node.task">Node.task</a></td>
-	<td class="summary">The function this node will run when visited</td>
+	<td class="summary">The function this node will run when visited.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Node.args">Node.args</a></td>
@@ -128,8 +125,11 @@
         <li><span class="parameter">task</span>
             <span class="types"><span class="type">function</span></span>
          The function to run when this node is visited in the tree traversal.
- This function must take a single table or nil as an argument, and it must return a
- boolean value of whether it successfully completed its task.
+ It can take 0-2 arguments, its first argument being a table, and its second argument being
+ an error table passed in from another node that failed its task. It must return a boolean
+ value of whether it completed its task, and optionally an error table containing information
+ on why it failed its task. Convention states the error table should include an entry called
+ errorMessage containing a human-readable explanation on why it failed its task.
         </li>
         <li><span class="parameter">args</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
@@ -186,20 +186,35 @@
 </dd>
     <dt>
     <a name = "Node:runTree"></a>
-    <strong>Node:runTree ()</strong>
+    <strong>Node:runTree (siblingErrorTable)</strong>
     </dt>
     <dd>
     Recursively traverses the tree depth-first, starting with this node as the root.  Each node runs
  its task when visited. Conditional nodes only run their task if their previous sibling node
- failed to complete its task.
+ failed to complete its task. When a node fails, it may return an error table containing
+ information on its failure. This error table is passed to its next sibling node if run, or it
+ is passed upward as the recursion unwinds due to task failure. Error tables are never passed
+ downward.
 
 
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">siblingErrorTable</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        [opt=nil] A table containing information from this node's sibling
+ that ran previously and failed its task. Nil if no sibling node or sibling node did not fail.
+        </li>
+    </ul>
 
     <h3>Returns:</h3>
     <ol>
-
+        <li>
            <span class="types"><span class="type">boolean</span></span>
-        whether the tree traversal succeeded and the root node's task was completed
+        whether the tree traversal succeeded and the root node's task was completed</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        An error table containing information about this tree's failed traversal. Nil if
+ the traversal did not fail.</li>
     </ol>
 
 
@@ -208,18 +223,28 @@
 </dd>
     <dt>
     <a name = "Node:visit"></a>
-    <strong>Node:visit ()</strong>
+    <strong>Node:visit (errorTable)</strong>
     </dt>
     <dd>
     Executes this node's task function.
 
 
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">errorTable</span>
+
+        </li>
+    </ul>
 
     <h3>Returns:</h3>
     <ol>
-
+        <li>
            <span class="types"><span class="type">boolean</span></span>
-        Returns whether the task function succeeded in completing its task
+        Returns whether the task function succeeded in completing its task</li>
+        <li>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        A table containing information about task failure if the task failed,
+ or nil if the task succeeded</li>
     </ol>
 
 
@@ -282,7 +307,12 @@
     <strong>Node.task</strong>
     </dt>
     <dd>
-    The function this node will run when visited
+    The function this node will run when visited.  It can take 0-2 arguments, its first argument
+ being a table, and its second argument being an error table passed in from another node that
+ failed its task. It must return a boolean value of whether it completed its task, and optionally
+ an error table containing information on why it failed its task. Convention states the error
+ table should include an entry called errorMessage containing a human-readable explanation on
+ why it failed its task.
 
 
 
@@ -326,7 +356,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-12-27 13:32:57 </i>
+<i style="float:right;">Last updated 2022-12-30 18:22:55 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

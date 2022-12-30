@@ -9,6 +9,10 @@ require "Node"
 -- A table used for testing how nodes run functions
 testTable = {}
 
+-- Contains the error tables received by each node, idexed by the first value in thus node's
+-- arguments table
+errorTables = {}
+
 -----
 -- A function that takes no arguments and returns true
 -- @treturn boolean true
@@ -27,8 +31,9 @@ end
 -- Appends the first entry in arg to the test table and returns true
 -- @tparam table arg appends the first entry in arg to the test table
 -- @treturn boolean true
-local function taskTrue(arg)
+local function taskTrue(arg, errorTable)
     testTable[#testTable + 1] = arg[1]
+    errorTables[arg[1]] = errorTable
     return true
 end
 
@@ -36,9 +41,11 @@ end
 -- Appends the first entry in arg to the test table and returns false
 -- @tparam table arg appends the first entry in arg to the test table
 -- @treturn boolean false
-local function taskFalse(arg)
+-- @treturn table arg
+local function taskFalse(arg, errorTable)
     testTable[#testTable + 1] = arg[1]
-    return false
+    errorTables[arg[1]] = errorTable
+    return false, arg
 end
 
 -----
@@ -190,7 +197,7 @@ local function testTreeTraversal()
     assert(testTable[10] == nil)
     assert(testTable[11] == nil)
 
-    -- Tests a tree with one conditional node that is activated == and a successful traversal
+    -- Tests a tree with one conditional node that is activated and a successful traversal
     node1 = Node:new(taskTrue, {1})
     node2 = node1:addChild(Node:new(taskTrue, {2}))
     node3 = node1:addChild(Node:new(taskTrue, {3}))
@@ -369,10 +376,47 @@ local function testTreeTraversal()
 end
 
 -----
+-- Tests how error tables are passed around
+local function testErrorTable()
+
+    node1 = Node:new(taskTrue, {1})
+    node2 = node1:addChild(Node:new(taskTrue, {2}))
+    node3 = node1:addChild(Node:new(taskFalse, {3}, Node.NODE_TYPE.CONDITIONAL))
+    node4 = node1:addChild(Node:new(taskTrue, {4}, Node.NODE_TYPE.CONDITIONAL))
+    node5 = node2:addChild(Node:new(taskFalse, {5}))
+    node6 = node2:addChild(Node:new(taskFalse, {6}, Node.NODE_TYPE.CONDITIONAL))
+    node7 = node6:addChild(Node:new(taskTrue, {7}))
+    node8 = node6:addChild(Node:new(taskTrue, {8}))
+
+    testTable = {}
+    errorTables = {}
+    assert(node1:runTree())
+    assert(testTable[1] == 5)
+    assert(testTable[2] == 7)
+    assert(testTable[3] == 8)
+    assert(testTable[4] == 6)
+    assert(testTable[5] == 3)
+    assert(testTable[6] == 4)
+    assert(testTable[7] == 1)
+    assert(testTable[8] == nil)
+    
+    assert(errorTables[1] == nil)
+    assert(errorTables[2] == nil)
+    assert(errorTables[3][1] == 6)
+    assert(errorTables[4][1] == 3)
+    assert(errorTables[5] == nil)
+    assert(errorTables[6][1] == 5)
+    assert(errorTables[7] == nil)
+    assert(errorTables[8] == nil)
+    
+end
+
+-----
 -- Runs all tests
 local function runTests()
     testNewNode()
     testTreeTraversal()
+    testErrorTable()
     io.write("All tests passed.")
 end
 

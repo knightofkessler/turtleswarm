@@ -1,7 +1,5 @@
 -----
--- Class for the behavior tree nodes. The task function passed into this node must take
--- a nil or a single table as its arguments and return boolean, otherwise behavior of this
--- class is undefined.
+-- Class for the behavior tree nodes.
 --
 -- @author Brenden Lech
 
@@ -19,7 +17,12 @@ Node.NODE_TYPE.NORMAL = "normal"
 Node.NODE_TYPE.CONDITIONAL = "conditional"
 
 -----
--- The function this node will run when visited
+-- The function this node will run when visited. It can take 0-2 arguments, its first argument
+-- being a table, and its second argument being an error table passed in from another node that
+-- failed its task. It must return a boolean value of whether it completed its task, and optionally
+-- an error table containing information on why it failed its task. Convention states the error
+-- table should include an entry called errorMessage containing a human-readable explanation on
+-- why it failed its task.
 Node.task = nil
 
 -----
@@ -37,8 +40,11 @@ Node.children = {}
 -----
 -- Creates a new Node object.
 -- @tparam function task The function to run when this node is visited in the tree traversal.
--- This function must take a single table or nil as an argument, and it must return a
--- boolean value of whether it successfully completed its task.
+-- It can take 0-2 arguments, its first argument being a table, and its second argument being
+-- an error table passed in from another node that failed its task. It must return a boolean
+-- value of whether it completed its task, and optionally an error table containing information
+-- on why it failed its task. Convention states the error table should include an entry called
+-- errorMessage containing a human-readable explanation on why it failed its task.
 -- @tparam[opt=nil] table args The arguments for this node's task function
 -- @tparam[opt=Node.NODE_TYPE.NORMAL] string nodeType The type of node this is. Can only be one of
 -- the types stored in Node.NODE_TYPE. If it isn't, it reverts to the default type.
@@ -102,11 +108,19 @@ end
 -----
 -- Recursively traverses the tree depth-first, starting with this node as the root. Each node runs
 -- its task when visited. Conditional nodes only run their task if their previous sibling node
--- failed to complete its task.
+-- failed to complete its task. When a node fails, it may return an error table containing
+-- information on its failure. This error table is passed to its next sibling node if run, or it
+-- is passed upward as the recursion unwinds due to task failure. Error tables are never passed
+-- downward.
+-- @tparam table siblingErrorTable[opt=nil] A table containing information from this node's sibling
+-- that ran previously and failed its task. Nil if no sibling node or sibling node did not fail.
 -- @treturn boolean whether the tree traversal succeeded and the root node's task was completed
-function Node:runTree()
+-- @treturn table An error table containing information about this tree's failed traversal. Nil if
+-- the traversal did not fail.
+function Node:runTree(siblingErrorTable)
 
     local previousTaskSucceeded = true
+    local childrenErrorTable = nil
 
     -- Recursively visits all children in this subtree
     for i = 1, #self.children, 1 do
@@ -125,7 +139,7 @@ function Node:runTree()
 
         if visitChild then
             -- Traverses the child node's tree
-            previousTaskSucceeded = self.children[i]:runTree()
+            previousTaskSucceeded, childrenErrorTable = self.children[i]:runTree(childrenErrorTable)
         end
 
     end
@@ -133,23 +147,28 @@ function Node:runTree()
     -- previousTaskSucceeded now holds whether this node's children succeeded their tasks.
     -- If the children nodes failed their tasks, this node cannot complete its task and must
     -- return false
+    -- childrenErrorTable now holds the failed child node's returned error table, or nil if
+    -- the last child node did not fail
     if not previousTaskSucceeded then
-        return false
+        return false, childrenErrorTable
     end
 
     -- Visits this node, running its task function
-    return self:visit()
+    return self:visit(siblingErrorTable)
 
 end
 
 -----
 -- Executes this node's task function.
 -- @treturn boolean Returns whether the task function succeeded in completing its task
-function Node:visit()
-    if self.task(self.args) then
+-- @treturn table A table containing information about task failure if the task failed,
+-- or nil if the task succeeded
+function Node:visit(errorTable)
+    success, returnedErrorTable = self.task(self.args, errorTable)
+    if success then
         return true
     else
-        return false
+        return false, returnedErrorTable
     end
 end
 
