@@ -15,10 +15,13 @@ local log = fs.open(logfilename, "a")
 
 -- State file used for persistence across program executions
 local statefilename = "state.txt"
-local oldstatefilename = "state_old.txt"
+local oldstatefilename = "state_backup.txt"
+-- If this file exists, the state file is currently being saved. Used to detect when program
+-- execution was cut off while saving the state
+local savingstatefilename = "saving_state"
 
 -- If this file doesn't exist, the turtle waits for user input before running
-local runningfilename = "running.txt"
+local runningfilename = "running"
 
 -- The list of tables to save and load data to from file
 local stateTables = {}
@@ -33,23 +36,91 @@ function utils.printlog(message)
 end
 
 -----
---TODO
--- Adds a table to the list of state variables to save and load
--- @tparam table variable the state variable to register to be saved/loaded
+-- Adds the given table to the list of state variables to save and load. If you set your state
+-- variable equal to a new table after registering (such as with myStateVariable = {}), you must
+-- re-register the state variable.
 -- @tparam string name the name of the state variable to register to be saved/loaded (must be
 -- unique)
-function utils.registerStateVariable(variable, name)
-    io.write("ERROR: Function not implemented.")
-    assert(false)
+-- @tparam table variable the state variable to register to be saved/loaded. Must be a table or
+-- state loading will throw an error.
+function utils.registerStateVariable(name, variable)
+	stateTables[name] = variable
 end
 
 -----
--- TODO rewrite to use the new statefile architecture
--- Loads the state file
+-- Loads the state file data into the registered state variables
 -- @treturn boolean whether the file or backup file was successfully loaded
 function utils.loadState()
-    io.write("ERROR: Function not implemented.")
-    assert(false)
+
+	-- Loads the backup state file instead if the current save file wasn't saved properly and may
+	-- be corrupted
+	local filetoload = statefilename
+	local previousSaveCorrupted = fs.exists(savingstatefilename)
+	if previousSaveCorrupted then
+
+		filetoload = oldstatefilename
+
+		if fs.exists(statefilename) then
+			fs.delete(statefilename)
+		end
+		if fs.exists(savingstatefilename) then
+			fs.delete(savingstatefilename)
+		end
+
+	end
+
+	-- Loads the data from the state file
+	local loadedTables = table.load(filetoload)
+	if loadedTables then
+
+		-- Clears each state table then fills it with the loaded data
+		for tableName, stateTable in pairs(stateTables) do
+
+			local loadedTable = loadedTables[tableName]
+
+			if loadedTable then
+				for k, v in pairs(stateTable) do
+					stateTable[k] = nil
+				end
+
+				for k, v in pairs(loadedTable) do
+					stateTable[k] = loadedTable[k]
+				end
+			end
+
+		end
+
+		return true
+
+	end
+
+	return false
+end
+
+-----
+-- Saves the registered state variables to a file
+function utils.saveState()
+
+	-- Makes a backup of the current state file if it's not corrupted
+	local previousSaveCorrupted = fs.exists(savingstatefilename)
+	if not previousSaveCorrupted and fs.exists(statefilename) then
+		if fs.exists(oldstatefilename) then
+			fs.delete(oldstatefilename)
+		end
+		fs.copy(statefilename, oldstatefilename)
+	end
+
+	-- Saves the state tables to the state file
+	local savingstatefile = fs.open(savingstatefilename, "w")
+	savingstatefile.close()
+	table.save(stateTables, statefilename)
+	fs.delete(savingstatefilename)
+
+	-- Deletes the backup
+	if fs.exists(oldstatefilename) then
+		fs.delete(oldstatefilename)
+	end
+
 end
 
 -----
@@ -78,15 +149,6 @@ function utils.nextToken(file)
         return token
     end
     
-end
-
------
--- TODO rewrite to use the new statefile architecture
--- Saves the state to a file
--- @treturn boolean whether the state was saved successfully
-function utils.saveState()
-    io.write("ERROR: Function not implemented.")
-    assert(false)
 end
 
 -----

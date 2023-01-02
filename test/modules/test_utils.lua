@@ -10,7 +10,7 @@ require "utils"
 -- Tests utils.initialize()
 local function testInitialize()
     utils.initialize()
-    assert(fs.exists("running.txt"))
+    assert(fs.exists("running"))
 end
 
 -----
@@ -40,6 +40,48 @@ local function testPrintlog()
 end
 
 -----
+-- Tests loading and saving states
+local function  testStateSaving()
+
+    if fs.exists("state.txt") then
+        fs.delete("state.txt")
+    end
+    if fs.exists("state_backup.txt") then
+        fs.delete("state_backup.txt")
+    end
+    if fs.exists("saving_state") then
+        fs.delete("saving_state")
+    end
+
+    local firstVar = {}
+    firstVar[3] = 3
+    firstVar[1] = "one"
+    firstVar["two"] = 2
+    local secondVar = {"hello", "world", {["log"]="minecraft:oak_log",["planks"]=10}}
+    utils.registerStateVariable("firstVar", firstVar)
+    utils.registerStateVariable("secondVar", secondVar)
+    
+    utils.saveState()
+    assert(not fs.exists("saving_state"))
+    
+    firstVar[3] = nil
+    firstVar[4] = "four"
+    secondVar = {}
+    utils.registerStateVariable("secondVar", secondVar)
+
+    assert(utils.loadState())
+    assert(firstVar[3] == 3)
+    assert(firstVar[1] == "one")
+    assert(firstVar["two"] == 2)
+    assert(firstVar[4] == nil)
+    assert(secondVar[1] == "hello")
+    assert(secondVar[2] == "world")
+    assert(secondVar[3]["log"] == "minecraft:oak_log")
+    assert(secondVar[3]["planks"] == 10)
+    
+end
+
+-----
 -- Tests utils.shutdown()
 local function testShutdown()
     utils.shutdown()
@@ -51,6 +93,7 @@ end
 local function runTests()
     testInitialize()
     testPrintlog()
+    testStateSaving()
     testShutdown()
 end
 
